@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -56,8 +57,12 @@ fun MoodSelectionScreen(
         StepList(
             padding = padding,
             title = "الان چه حالی داری؟",
-            subtitle = "یک وضعیت را انتخاب کن تا قدم بعدی را پیشنهاد بدهیم."
+            subtitle = "یک وضعیت را انتخاب کن تا فقط یک قدم کوچک پیشنهاد شود."
         ) {
+            item {
+                StatsSummary(history = state.history)
+            }
+
             items(state.moods) { mood ->
                 ChoiceCard(
                     title = mood.label,
@@ -93,7 +98,7 @@ fun EnergySelectionScreen(
         StepList(
             padding = padding,
             title = "چقدر انرژی داری؟",
-            subtitle = "پیشنهادها بر اساس توان همین لحظه انتخاب می‌شوند."
+            subtitle = "پیشنهاد با توان همین لحظه‌ات هماهنگ می‌شود."
         ) {
             items(state.energyLevels) { energy ->
                 ChoiceCard(
@@ -110,8 +115,8 @@ fun EnergySelectionScreen(
 @Composable
 fun SuggestedActionScreen(
     state: MoodUiState,
-    onCompleteClick: (Boolean) -> Unit,
-    onSkipClick: () -> Unit,
+    onDoneClick: () -> Unit,
+    onNotDoneClick: () -> Unit,
     onAnotherClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -139,9 +144,10 @@ fun SuggestedActionScreen(
             when {
                 state.isLoading -> CircularProgressIndicator()
                 state.suggestedAction != null -> SuggestedActionContent(
+                    state = state,
                     suggestion = state.suggestedAction,
-                    onCompleteClick = onCompleteClick,
-                    onSkipClick = onSkipClick,
+                    onDoneClick = onDoneClick,
+                    onNotDoneClick = onNotDoneClick,
                     onAnotherClick = onAnotherClick
                 )
                 else -> EmptySuggestionContent(
@@ -156,7 +162,8 @@ fun SuggestedActionScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
-    helped: Boolean,
+    completed: Boolean,
+    onHelpedClick: (Boolean) -> Unit,
     onNewMoodClick: () -> Unit,
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -175,25 +182,55 @@ fun ResultScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = if (helped) "خوبه؛ این تلنگر به کارت آمد." else "ثبت شد؛ همه پیشنهادها قرار نیست همیشه جواب بدهند.",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "بازخوردت کمک می‌کند پیشنهادهای بعدی دقیق‌تر شوند.",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onNewMoodClick
-            ) {
-                Text(text = "شروع دوباره")
+            if (completed) {
+                Text(
+                    text = "این قدم کوچک انجام شد؟ عالی. کمک کرد؟",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "بازخوردت فقط برای بهتر شدن پیشنهادهای بعدی ذخیره می‌شود.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onHelpedClick(true) }
+                ) {
+                    Text(text = "کمک کرد")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onHelpedClick(false) }
+                ) {
+                    Text(text = "کمک نکرد")
+                }
+            } else {
+                Text(
+                    text = "اشکالی ندارد؛ همین که وضعیتت را دیدی یک قدم است.",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "می‌توانی بعدا با یک انتخاب تازه دوباره شروع کنی.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onNewMoodClick
+                ) {
+                    Text(text = "شروع دوباره")
+                }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -247,6 +284,10 @@ fun HistoryScreen(
                 contentPadding = PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                item {
+                    StatsSummary(history = history)
+                }
+
                 items(history) { item ->
                     HistoryItemCard(item = item)
                 }
@@ -318,10 +359,63 @@ private fun ChoiceCard(
 }
 
 @Composable
+private fun StatsSummary(history: List<ActionHistoryItem>) {
+    val completedCount = history.count { it.wasCompleted }
+    val helpedCount = history.count { it.wasCompleted && it.helped }
+    val skippedCount = history.count { !it.wasCompleted }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "آمار کوچک",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "تا حالا $helpedCount بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                StatText(label = "انجام شد", value = completedCount)
+                StatText(label = "کمک کرد", value = helpedCount)
+                StatText(label = "انجام نشد", value = skippedCount)
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatText(label: String, value: Int) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value.toString(),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
 private fun SuggestedActionContent(
+    state: MoodUiState,
     suggestion: SuggestedAction,
-    onCompleteClick: (Boolean) -> Unit,
-    onSkipClick: () -> Unit,
+    onDoneClick: () -> Unit,
+    onNotDoneClick: () -> Unit,
     onAnotherClick: () -> Unit
 ) {
     val action = suggestion.action
@@ -346,37 +440,77 @@ private fun SuggestedActionContent(
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary
         )
+        Spacer(modifier = Modifier.height(16.dp))
+        TimerPanel(
+            remainingSeconds = state.timerRemainingSeconds,
+            totalSeconds = state.timerTotalSeconds,
+            isRunning = state.isTimerRunning
+        )
         Spacer(modifier = Modifier.height(24.dp))
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onCompleteClick(true) }
+            onClick = onDoneClick
         ) {
-            Text(text = "انجام شد و کمک کرد")
+            Text(text = "انجام شد")
         }
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onCompleteClick(false) }
+            onClick = onNotDoneClick
         ) {
-            Text(text = "انجام شد ولی کمک نکرد")
+            Text(text = "انجام نشد")
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
+        OutlinedButton(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            onClick = onAnotherClick
         ) {
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                onClick = onSkipClick
-            ) {
-                Text(text = "رد کردن")
-            }
-            OutlinedButton(
-                modifier = Modifier.weight(1f),
-                onClick = onAnotherClick
-            ) {
-                Text(text = "پیشنهاد دیگر")
-            }
+            Text(text = "پیشنهاد دیگر")
+        }
+    }
+}
+
+@Composable
+private fun TimerPanel(
+    remainingSeconds: Int,
+    totalSeconds: Int,
+    isRunning: Boolean
+) {
+    val progress = if (totalSeconds == 0) {
+        0f
+    } else {
+        remainingSeconds.toFloat() / totalSeconds.toFloat()
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "تایمر ساده",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = formatTime(remainingSeconds),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = if (isRunning) "در حال شمارش" else "زمان تمام شد",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -432,12 +566,18 @@ private fun HistoryItemCard(item: ActionHistoryItem) {
     }
 }
 
+private fun formatTime(seconds: Int): String {
+    val minutes = seconds / 60
+    val remainingSeconds = seconds % 60
+    return "%02d:%02d".format(minutes, remainingSeconds)
+}
+
 private fun moodLabel(mood: String): String {
     return when (mood) {
         "anxious" -> "مضطرب"
         "bored" -> "بی‌حوصله"
         "tired" -> "خسته"
-        "unfocused" -> "حواس‌پرت"
+        "unfocused" -> "بی‌تمرکز"
         "unmotivated" -> "بی‌انگیزه"
         else -> mood
     }
@@ -456,6 +596,6 @@ private fun resultLabel(item: ActionHistoryItem): String {
     return when {
         item.wasCompleted && item.helped -> "کمک کرد"
         item.wasCompleted -> "کمک نکرد"
-        else -> "رد شد"
+        else -> "انجام نشد"
     }
 }

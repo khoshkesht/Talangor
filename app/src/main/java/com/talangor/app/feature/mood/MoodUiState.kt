@@ -22,6 +22,9 @@ data class MoodUiState(
     val selectedEnergy: EnergyChoice? = null,
     val suggestedAction: SuggestedAction? = null,
     val history: List<ActionHistoryItem> = emptyList(),
+    val timerRemainingSeconds: Int = 0,
+    val timerTotalSeconds: Int = 0,
+    val isTimerRunning: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
@@ -30,7 +33,7 @@ private val defaultMoodChoices = listOf(
     MoodChoice("anxious", "مضطرب", "ذهنم درگیر و ناآرام است"),
     MoodChoice("bored", "بی‌حوصله", "حس می‌کنم هیچ چیز جذاب نیست"),
     MoodChoice("tired", "خسته", "انرژی جسمی یا ذهنی کمی دارم"),
-    MoodChoice("unfocused", "حواس‌پرت", "تمرکز کردن سخت شده"),
+    MoodChoice("unfocused", "بی‌تمرکز", "تمرکز کردن سخت شده"),
     MoodChoice("unmotivated", "بی‌انگیزه", "شروع کردن برایم سنگین است")
 )
 

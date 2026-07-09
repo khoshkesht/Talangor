@@ -7,6 +7,8 @@ import com.talangor.app.domain.usecase.CompleteActionUseCase
 import com.talangor.app.domain.usecase.GetActionForMoodUseCase
 import com.talangor.app.domain.usecase.GetHistoryUseCase
 import com.talangor.app.domain.usecase.SkipActionUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +24,8 @@ class MoodViewModel(
     private val _uiState = MutableStateFlow(MoodUiState())
     val uiState: StateFlow<MoodUiState> = _uiState.asStateFlow()
 
+    private var timerJob: Job? = null
+
     init {
         viewModelScope.launch {
             getHistoryUseCase().collect { entries ->
@@ -31,11 +35,14 @@ class MoodViewModel(
     }
 
     fun selectMood(mood: MoodChoice) {
+        stopTimer()
         _uiState.update {
             it.copy(
                 selectedMood = mood,
                 selectedEnergy = null,
                 suggestedAction = null,
+                timerRemainingSeconds = 0,
+                timerTotalSeconds = 0,
                 errorMessage = null
             )
         }
@@ -43,11 +50,14 @@ class MoodViewModel(
 
     fun selectEnergy(energy: EnergyChoice) {
         val mood = _uiState.value.selectedMood ?: return
+        stopTimer()
 
         _uiState.update {
             it.copy(
                 selectedEnergy = energy,
                 suggestedAction = null,
+                timerRemainingSeconds = 0,
+                timerTotalSeconds = 0,
                 isLoading = true,
                 errorMessage = null
             )
@@ -66,22 +76,24 @@ class MoodViewModel(
                     errorMessage = if (suggestion == null) "فعلا پیشنهادی برای این وضعیت پیدا نشد." else null
                 )
             }
-        }
-    }
 
-    fun requestAnotherAction() {
-        val energy = _uiState.value.selectedEnergy ?: return
-        selectEnergy(energy)
+            suggestion?.action?.durationMinutes?.let { durationMinutes ->
+                startTimer(durationMinutes)
+            }
+        }
     }
 
     fun skipAndRequestAnother() {
         val logId = _uiState.value.suggestedAction?.logId
         val mood = _uiState.value.selectedMood ?: return
         val energy = _uiState.value.selectedEnergy ?: return
+        stopTimer()
 
         _uiState.update {
             it.copy(
                 suggestedAction = null,
+                timerRemainingSeconds = 0,
+                timerTotalSeconds = 0,
                 isLoading = true,
                 errorMessage = null
             )
@@ -104,11 +116,16 @@ class MoodViewModel(
                     errorMessage = if (suggestion == null) "فعلا پیشنهاد دیگری برای این وضعیت پیدا نشد." else null
                 )
             }
+
+            suggestion?.action?.durationMinutes?.let { durationMinutes ->
+                startTimer(durationMinutes)
+            }
         }
     }
 
     fun completeAction(helped: Boolean) {
         val logId = _uiState.value.suggestedAction?.logId ?: return
+        stopTimer()
 
         viewModelScope.launch {
             completeActionUseCase(logId = logId, helped = helped)
@@ -117,9 +134,41 @@ class MoodViewModel(
 
     fun skipAction() {
         val logId = _uiState.value.suggestedAction?.logId ?: return
+        stopTimer()
 
         viewModelScope.launch {
             skipActionUseCase(logId = logId)
+        }
+    }
+
+    fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
+        _uiState.update { it.copy(isTimerRunning = false) }
+    }
+
+    private fun startTimer(durationMinutes: Int) {
+        val totalSeconds = durationMinutes.coerceAtLeast(1) * 60
+        timerJob?.cancel()
+        _uiState.update {
+            it.copy(
+                timerRemainingSeconds = totalSeconds,
+                timerTotalSeconds = totalSeconds,
+                isTimerRunning = true
+            )
+        }
+
+        timerJob = viewModelScope.launch {
+            while (_uiState.value.timerRemainingSeconds > 0) {
+                delay(1_000)
+                _uiState.update { current ->
+                    val nextRemaining = (current.timerRemainingSeconds - 1).coerceAtLeast(0)
+                    current.copy(
+                        timerRemainingSeconds = nextRemaining,
+                        isTimerRunning = nextRemaining > 0
+                    )
+                }
+            }
         }
     }
 

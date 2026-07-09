@@ -14,6 +14,7 @@ object InitialActionSeeder {
             if (actionDao.countActions() == 0) {
                 actionDao.insertAll(InitialActionSeeds.actions)
             }
+            actionDao.capLongDurations()
         }
     }
 }

@@ -51,13 +51,14 @@ fun TalangorNavHost(viewModel: MoodViewModel) {
         composable(TalangorRoute.SuggestedAction.route) {
             SuggestedActionScreen(
                 state = state,
-                onCompleteClick = { helped ->
-                    viewModel.completeAction(helped)
-                    navController.navigate(TalangorRoute.Result.createRoute(helped))
+                onDoneClick = {
+                    viewModel.stopTimer()
+                    viewModel.completeAction(helped = false)
+                    navController.navigate(TalangorRoute.Result.createRoute(completed = true))
                 },
-                onSkipClick = {
+                onNotDoneClick = {
                     viewModel.skipAction()
-                    navController.popBackStack(TalangorRoute.MoodSelection.route, inclusive = false)
+                    navController.navigate(TalangorRoute.Result.createRoute(completed = false))
                 },
                 onAnotherClick = viewModel::skipAndRequestAnother,
                 onBackClick = {
@@ -67,10 +68,14 @@ fun TalangorNavHost(viewModel: MoodViewModel) {
         }
 
         composable(TalangorRoute.Result.route) { backStackEntry ->
-            val helped = backStackEntry.arguments?.getString("helped").toBoolean()
+            val completed = backStackEntry.arguments?.getString("completed").toBoolean()
 
             ResultScreen(
-                helped = helped,
+                completed = completed,
+                onHelpedClick = { helped ->
+                    viewModel.completeAction(helped)
+                    navController.popBackStack(TalangorRoute.MoodSelection.route, inclusive = false)
+                },
                 onNewMoodClick = {
                     navController.popBackStack(TalangorRoute.MoodSelection.route, inclusive = false)
                 },

@@ -13,10 +13,10 @@ interface ActionDao {
     @Query("SELECT * FROM actions WHERE isActive = 1 ORDER BY mood ASC, energyLevel ASC, durationMinutes ASC")
     fun observeActiveActions(): Flow<List<ActionEntity>>
 
-    @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 ORDER BY durationMinutes ASC")
+    @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 AND durationMinutes <= 5 ORDER BY durationMinutes ASC")
     fun observeActionsForMood(mood: String, energyLevel: String): Flow<List<ActionEntity>>
 
-    @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 ORDER BY durationMinutes ASC")
+    @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 AND durationMinutes <= 5 ORDER BY durationMinutes ASC")
     suspend fun getActiveActionsForMood(mood: String, energyLevel: String): List<ActionEntity>
 
     @Query("SELECT * FROM actions WHERE id = :id LIMIT 1")
@@ -36,4 +36,7 @@ interface ActionDao {
 
     @Query("UPDATE actions SET isActive = 0 WHERE id = :id")
     suspend fun deactivate(id: Long)
+
+    @Query("UPDATE actions SET durationMinutes = 5 WHERE durationMinutes > 5")
+    suspend fun capLongDurations()
 }
