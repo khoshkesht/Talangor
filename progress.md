@@ -315,3 +315,43 @@ Added the action repository and use cases for selecting, completing, skipping, a
 - Added selection logic that avoids the last suggested action when possible and prioritizes actions that helped before.
 - Added the requested use cases and DAO queries.
 - Verified the app with `.\gradlew.bat assembleDebug --offline`.
+
+## 2026-07-10 - Compose MVP Screens
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: app/src/main/java/com/talangor/app/data/local/dao/MoodLogDao.kt
+
+## Open tabs:
+- MoodLogDao.kt: app/src/main/java/com/talangor/app/data/local/dao/MoodLogDao.kt
+- ActionRepository.kt: app/src/main/java/com/talangor/app/domain/repository/ActionRepository.kt
+- MoodRepository.kt: app/src/main/java/com/talangor/app/domain/repository/MoodRepository.kt
+- progress.md: progress.md
+- AGENTS.md: .agents/AGENTS.md
+
+## My request for Codex:
+
+Build the Compose UI screens:
+1. MoodSelectionScreen
+2. EnergySelectionScreen
+3. SuggestedActionScreen
+4. ResultScreen
+5. HistoryScreen
+
+Use Material 3.
+Keep the UI simple, clean, and RTL-friendly for Persian text.
+```
+
+### Summary
+
+Built the main Compose MVP flow with simple Persian Material 3 screens.
+
+### Key Changes
+
+- Added mood, energy, suggested action, result, and history screens.
+- Updated navigation and ViewModel wiring for the new action use cases.
+- Updated `MainActivity` dependency wiring to use `ActionRepositoryImpl`.
+- Verified the app with `.\gradlew.bat assembleDebug --offline`.
