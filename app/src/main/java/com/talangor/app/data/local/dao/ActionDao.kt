@@ -16,6 +16,9 @@ interface ActionDao {
     @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 ORDER BY durationMinutes ASC")
     fun observeActionsForMood(mood: String, energyLevel: String): Flow<List<ActionEntity>>
 
+    @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 ORDER BY durationMinutes ASC")
+    suspend fun getActiveActionsForMood(mood: String, energyLevel: String): List<ActionEntity>
+
     @Query("SELECT * FROM actions WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): ActionEntity?
 

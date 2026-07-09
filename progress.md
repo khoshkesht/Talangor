@@ -276,3 +276,42 @@ Added a seed mechanism that inserts predefined Persian micro-actions when the ac
 - Added `InitialActionSeeder` and connected it to `TalangorDatabase`.
 - Changed action and mood-log energy levels to string values and bumped the database version.
 - Verified the app with `.\gradlew.bat assembleDebug --offline`.
+
+## 2026-07-10 - Action Repository and Use Cases
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: progress.md
+
+## Open tabs:
+- progress.md: progress.md
+- AGENTS.md: .agents/AGENTS.md
+- InitialActionSeeds.kt: app/src/main/java/com/talangor/app/data/local/seed/InitialActionSeeds.kt
+- InitialActionSeeder.kt: app/src/main/java/com/talangor/app/data/local/seed/InitialActionSeeder.kt
+- ActionDao.kt: app/src/main/java/com/talangor/app/data/local/dao/ActionDao.kt
+
+## My request for Codex:
+
+Create repository and use cases for:
+- GetActionForMoodUseCase
+- CompleteActionUseCase
+- SkipActionUseCase
+- GetHistoryUseCase
+
+The selection logic should avoid repeating the last suggested action and prefer actions that previously helped the user.
+
+```
+
+### Summary
+
+Added the action repository and use cases for selecting, completing, skipping, and reading action history.
+
+### Key Changes
+
+- Added action domain models, repository interface, repository implementation, and history mapping.
+- Added selection logic that avoids the last suggested action when possible and prioritizes actions that helped before.
+- Added the requested use cases and DAO queries.
+- Verified the app with `.\gradlew.bat assembleDebug --offline`.
