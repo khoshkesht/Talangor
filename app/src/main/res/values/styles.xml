@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Talangor" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/talangor_background</item>
+        <item name="android:textColorPrimary">@color/talangor_text</item>
+    </style>
+</resources>
