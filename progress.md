@@ -166,3 +166,70 @@ Resolved the remaining Android build setup issue after the Gradle update and ver
 
 - Added missing SDK metadata so Android API 37 is recognized by `sdkmanager` and Gradle.
 - Verified `.\gradlew.bat assembleDebug` succeeds online and `.\gradlew.bat assembleDebug --offline` succeeds with the system Gradle cache.
+
+## 2026-07-10 - Room Database Entities and DAOs
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: build.gradle.kts
+
+## Open tabs:
+- build.gradle.kts: build.gradle.kts
+- settings.gradle.kts: settings.gradle.kts
+- gradle-daemon-jvm.properties: gradle/gradle-daemon-jvm.properties
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+- progress.md: progress.md
+
+## My request for Codex:
+
+Implement Room database for a Mood-to-Action app.
+
+Entities:
+- ActionEntity: id, title, description, mood, energyLevel, durationMinutes, category, isActive
+- MoodLogEntity: id, mood, energyLevel, selectedActionId, wasCompleted, helped, createdAt
+
+Create DAOs and AppDatabase.
+Use Kotlin coroutines.
+```
+
+### Summary
+
+Added the Room database layer for actions and mood logs with coroutine-friendly DAO methods.
+
+### Key Changes
+
+- Added `ActionEntity`, `MoodLogEntity`, `ActionDao`, `MoodLogDao`, and `AppDatabase`.
+- Updated the app entry point to use `AppDatabase`.
+- Verified the app with `.\gradlew.bat assembleDebug --offline`.
+
+## 2026-07-10 - Restore TalangorDatabase Name
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: build.gradle.kts
+
+## Open tabs:
+- build.gradle.kts: build.gradle.kts
+- settings.gradle.kts: settings.gradle.kts
+- gradle-daemon-jvm.properties: gradle/gradle-daemon-jvm.properties
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+- progress.md: progress.md
+
+## My request for Codex:
+اسم دیتابیس همان TalangorDatabase باشد
+```
+
+### Summary
+
+Renamed the Room database class back to `TalangorDatabase`.
+
+### Key Changes
+
+- Replaced `AppDatabase` references with `TalangorDatabase`.
+- Verified the app with `.\gradlew.bat assembleDebug --offline`.

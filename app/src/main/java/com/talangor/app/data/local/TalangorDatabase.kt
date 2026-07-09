@@ -4,15 +4,25 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.talangor.app.data.local.dao.ActionDao
 import com.talangor.app.data.local.dao.MoodEntryDao
+import com.talangor.app.data.local.dao.MoodLogDao
+import com.talangor.app.data.local.entity.ActionEntity
 import com.talangor.app.data.local.entity.MoodEntryEntity
+import com.talangor.app.data.local.entity.MoodLogEntity
 
 @Database(
-    entities = [MoodEntryEntity::class],
-    version = 1,
-    exportSchema = true
+    entities = [
+        ActionEntity::class,
+        MoodLogEntity::class,
+        MoodEntryEntity::class
+    ],
+    version = 2,
+    exportSchema = false
 )
 abstract class TalangorDatabase : RoomDatabase() {
+    abstract fun actionDao(): ActionDao
+    abstract fun moodLogDao(): MoodLogDao
     abstract fun moodEntryDao(): MoodEntryDao
 
     companion object {
@@ -25,7 +35,10 @@ abstract class TalangorDatabase : RoomDatabase() {
                     context.applicationContext,
                     TalangorDatabase::class.java,
                     "talangor.db"
-                ).build().also { instance = it }
+                )
+                    .fallbackToDestructiveMigration(false)
+                    .build()
+                    .also { instance = it }
             }
         }
     }
