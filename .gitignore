@@ -3,6 +3,7 @@
 .idea/
 .codex/
 promphistory/
+sdk-install-temp/
 /build/
 /captures/
 /local.properties

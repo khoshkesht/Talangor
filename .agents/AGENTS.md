@@ -14,19 +14,16 @@ Agent:
 - Always respond in Persian, even if my prompts are written in English.
 - After every set of changes, suggest a clear commit title and ask for approval before pushing to the repository.
 
-
 ## Documentation Rules
 
-Maintain a project log in `progress.md`.
+Maintain a concise project log in `progress.md`.
 
-After every prompt you process:
+After every completed prompt:
 
-* Append a new entry to `progress.md`. Never overwrite or remove previous entries.
-* Include the **original user prompt exactly as received**, without any modifications, edits, or formatting changes.
-* Write a concise, plain-English summary of what you implemented or changed.
-* List the completed actions in chronological order.
-* Record important decisions, assumptions, and reasons for them.
-* If a task is only partially completed, clearly state what remains to be done.
-* Use Markdown headings, bullet lists, and code blocks where appropriate to keep the document readable.
+- Append a new entry to `progress.md`. Never modify or delete previous entries.
+- Include the original user prompt exactly as received.
+- Write a brief summary (1–3 sentences) of the completed work.
+- List only the key changes or completed tasks.
+- If the task is incomplete, add a single line describing what remains.
 
-The documentation must always stay synchronized with the current state of the project and be updated immediately after each completed prompt.
+Keep the documentation minimal and focused. Record only information that is important for understanding the project's current state. Avoid implementation details, explanations, reasoning, assumptions, or repetitive information unless they are critical.

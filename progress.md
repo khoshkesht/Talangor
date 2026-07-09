@@ -1,5 +1,90 @@
 # Project Progress
 
+## 2026-07-09 - Update Gradle Wrapper
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: progress.md
+
+## Open tabs:
+- progress.md: progress.md
+- AGENTS.md: .agents/AGENTS.md
+- source.properties: c:\Users\Lenovo\Downloads\Android.SDK.Tools.26.1.1\Android.SDK.Tools.26.1.1\tools\source.properties
+- gradlew.bat: gradlew.bat
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+
+## My request for Codex:
+فایل AGENTS.md رو مجدد بخون
+gradle رو آپدیت کن
+```
+
+### Summary
+
+Re-read `AGENTS.md` and updated the Gradle Wrapper distribution from `9.3.0` to `9.4.1`.
+
+### Key Changes
+
+- Updated `gradle/wrapper/gradle-wrapper.properties`.
+- Ran `.\gradlew.bat assembleDebug --refresh-dependencies` with Android Studio JBR.
+
+### Remaining Work
+
+- Build still fails because Gradle cannot resolve `com.android.application` version `9.2.0` from the configured repositories.
+
+## 2026-07-09 - Manual Android SDK Installation
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: gradle/wrapper/gradle-wrapper.properties
+
+## Open tabs:
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+- gradlew.bat: gradlew.bat
+- gradlew: gradlew
+- AGENTS.md: .agents/AGENTS.md
+- progress.md: progress.md
+
+## My request for Codex:
+Android API 36 و Android SDK Command-line Tools رو نمیتونم تو android studio نصب میکنم. میتونی پیداشون کنی دستی و نصب کنی؟
+```
+
+### Summary
+
+Manually installed Android SDK Command-line Tools, Android API 36, and Android SDK Build-Tools 36 from official Google Android repository downloads. Added the temporary SDK download folder to `.gitignore`.
+
+### Completed Actions
+
+- Re-read `.agents/AGENTS.md` and confirmed the documentation and Persian response rules.
+- Checked the Gradle wrapper configuration and local Android SDK location.
+- Confirmed Android Studio is installed but `sdkmanager.bat` was missing from the SDK.
+- Downloaded Android SDK Command-line Tools from Google's official `redirector.gvt1.com/edgedl/android/repository` path.
+- Installed Command-line Tools into `C:\Users\Lenovo\AppData\Local\Android\Sdk\cmdline-tools\latest`.
+- Ran `sdkmanager.bat` with Android Studio JBR because the system PATH still defaults to Java 8.
+- Downloaded the official SDK repository manifest from Google and identified the exact API 36 packages.
+- Downloaded and installed `platform-36_r02.zip` into `platforms/android-36`.
+- Downloaded and installed `build-tools_r36_windows.zip` into `build-tools/36.0.0`.
+- Verified `platforms/android-36/android.jar` and `build-tools/36.0.0/aapt2.exe` exist.
+- Ran `.\gradlew.bat assembleDebug --refresh-dependencies`.
+
+### Decisions and Assumptions
+
+- Did not search for alternate SDK versions, per the user's instruction.
+- Used the official Google `redirector.gvt1.com/edgedl/android/repository` path because direct `dl.google.com/android/repository` requests returned 404 from this environment.
+- Kept the downloaded/extracted SDK files in `sdk-install-temp/` and ignored that folder in Git.
+- Did not change the Gradle wrapper version during this prompt because the user asked specifically for SDK installation.
+
+### Remaining Work
+
+- Build still fails before compilation because Gradle cannot resolve `com.android.application` version `9.2.0`.
+- Official AGP 9.2 documentation says Gradle `9.4.1` is required, while this project currently has Gradle wrapper `9.3.0`.
+- Next step should be updating the Gradle wrapper to `9.4.1` and then retrying dependency resolution, if approved.
+
 ## 2026-07-09 - Repository and Dependency Guidance
 
 ### Original User Prompt
