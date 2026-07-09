@@ -139,3 +139,30 @@ Updated the agent rules to require a clear commit title and explicit approval be
 - Renamed the branch to `main`.
 - Pushed `main` to the GitHub repository.
 - Build was not run after the final configuration changes because the project now targets SDK 36 and the local Android SDK currently only has SDK 34 installed.
+
+## 2026-07-10 - Build Fix After Gradle Update
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: gradle/wrapper/gradle-wrapper.properties
+
+## Open tabs:
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+- progress.md: progress.md
+- gradlew.bat: gradlew.bat
+
+## My request for Codex:
+مشکل بیلد رو حل کردم و GRADLE رو هم آپدیت کردم
+```
+
+### Summary
+
+Resolved the remaining Android build setup issue after the Gradle update and verified the debug build.
+
+### Key Changes
+
+- Added missing SDK metadata so Android API 37 is recognized by `sdkmanager` and Gradle.
+- Verified `.\gradlew.bat assembleDebug` succeeds online and `.\gradlew.bat assembleDebug --offline` succeeds with the system Gradle cache.

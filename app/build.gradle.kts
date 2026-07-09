@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.talangor.app"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.talangor.app"
