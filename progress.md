@@ -233,3 +233,46 @@ Renamed the Room database class back to `TalangorDatabase`.
 
 - Replaced `AppDatabase` references with `TalangorDatabase`.
 - Verified the app with `.\gradlew.bat assembleDebug --offline`.
+
+## 2026-07-10 - Seed Initial Persian Actions
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: build.gradle.kts
+
+## Open tabs:
+- build.gradle.kts: build.gradle.kts
+- settings.gradle.kts: settings.gradle.kts
+- gradle-daemon-jvm.properties: gradle/gradle-daemon-jvm.properties
+- gradle-wrapper.properties: gradle/wrapper/gradle-wrapper.properties
+- progress.md: progress.md
+
+## My request for Codex:
+
+Add a seed mechanism for initial actions.
+
+Create at least 40 predefined micro-actions in Persian.
+Each action should have:
+title, description, mood, energyLevel, durationMinutes, category.
+
+Moods:
+anxious, bored, tired, unfocused, unmotivated
+
+Energy levels:
+low, medium, high
+
+```
+
+### Summary
+
+Added a seed mechanism that inserts predefined Persian micro-actions when the actions table is empty.
+
+### Key Changes
+
+- Added 45 Persian initial actions across the requested moods and energy levels.
+- Added `InitialActionSeeder` and connected it to `TalangorDatabase`.
+- Changed action and mood-log energy levels to string values and bumped the database version.
+- Verified the app with `.\gradlew.bat assembleDebug --offline`.

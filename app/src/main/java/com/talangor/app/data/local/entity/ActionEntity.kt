@@ -9,7 +9,7 @@ data class ActionEntity(
     val title: String,
     val description: String,
     val mood: String,
-    val energyLevel: Int,
+    val energyLevel: String,
     val durationMinutes: Int,
     val category: String,
     val isActive: Boolean = true

@@ -14,10 +14,13 @@ interface ActionDao {
     fun observeActiveActions(): Flow<List<ActionEntity>>
 
     @Query("SELECT * FROM actions WHERE mood = :mood AND energyLevel = :energyLevel AND isActive = 1 ORDER BY durationMinutes ASC")
-    fun observeActionsForMood(mood: String, energyLevel: Int): Flow<List<ActionEntity>>
+    fun observeActionsForMood(mood: String, energyLevel: String): Flow<List<ActionEntity>>
 
     @Query("SELECT * FROM actions WHERE id = :id LIMIT 1")
     suspend fun getById(id: Long): ActionEntity?
+
+    @Query("SELECT COUNT(*) FROM actions")
+    suspend fun countActions(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(action: ActionEntity): Long

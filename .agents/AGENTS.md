@@ -12,7 +12,7 @@ Project rules:
 
 Agent:
 - Always respond in Persian, even if my prompts are written in English.
-- After every set of changes, suggest a clear commit title and ask for approval before pushing to the repository.
+- After every set of changes, suggest a clear commit title .
 
 ## Documentation Rules
 

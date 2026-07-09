@@ -24,7 +24,7 @@ import androidx.room.PrimaryKey
 data class MoodLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val mood: String,
-    val energyLevel: Int,
+    val energyLevel: String,
     val selectedActionId: Long?,
     val wasCompleted: Boolean = false,
     val helped: Boolean = false,

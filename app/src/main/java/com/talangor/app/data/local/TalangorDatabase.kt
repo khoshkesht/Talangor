@@ -10,6 +10,7 @@ import com.talangor.app.data.local.dao.MoodLogDao
 import com.talangor.app.data.local.entity.ActionEntity
 import com.talangor.app.data.local.entity.MoodEntryEntity
 import com.talangor.app.data.local.entity.MoodLogEntity
+import com.talangor.app.data.local.seed.InitialActionSeeder
 
 @Database(
     entities = [
@@ -17,7 +18,7 @@ import com.talangor.app.data.local.entity.MoodLogEntity
         MoodLogEntity::class,
         MoodEntryEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class TalangorDatabase : RoomDatabase() {
@@ -38,7 +39,10 @@ abstract class TalangorDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration(false)
                     .build()
-                    .also { instance = it }
+                    .also { database ->
+                        instance = database
+                        InitialActionSeeder.seedIfNeeded(database.actionDao())
+                    }
             }
         }
     }
