@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -78,7 +79,6 @@ fun MoodSelectionScreen(
         bottomBar = { ImageBottomBar() }
     ) {
         item {
-            BrandHeaderAsset()
             ImageAssetBlock(
                 drawableRes = R.drawable.home_title,
                 modifier = Modifier.fillMaxWidth(),
@@ -88,12 +88,7 @@ fun MoodSelectionScreen(
         }
 
         item {
-            ImageAssetBlock(
-                drawableRes = R.drawable.stats_panel,
-                modifier = Modifier.fillMaxWidth(),
-                aspectRatio = 1.95f,
-                contentDescription = "آمار کوچک"
-            )
+            HomeStatsAssetPanel(history = state.history)
         }
 
         item {
@@ -121,7 +116,7 @@ fun MoodSelectionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onHistoryClick),
-                aspectRatio = 2.95f,
+                aspectRatio = 3.2f,
                 contentDescription = "تاریخچه"
             )
         }
@@ -237,12 +232,13 @@ fun ResultScreen(
 @Composable
 fun HistoryScreen(
     history: List<ActionHistoryItem>,
+    onHomeClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ScreenShell(
         modifier = modifier,
-        bottomBar = { ImageBottomBar() }
+        bottomBar = { ImageBottomBar(onHomeClick = onHomeClick) }
     ) {
         item {
             HeaderLogo(compact = true)
@@ -320,24 +316,6 @@ private fun ScreenShell(
 }
 
 @Composable
-private fun BrandHeaderAsset() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.brand_header),
-            contentDescription = "لوگوی تلنگر",
-            modifier = Modifier
-                .width(154.dp)
-                .height(58.dp),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
-
-@Composable
 private fun HeaderLogo(compact: Boolean = false) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -377,21 +355,106 @@ private fun MoodAssetCard(mood: MoodChoice, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        aspectRatio = 1.42f,
+        aspectRatio = 1.65f,
         contentDescription = mood.label
     )
 }
 
 @Composable
-private fun ImageBottomBar() {
-    Image(
-        painter = painterResource(id = R.drawable.bottom_nav),
-        contentDescription = "ناوبری پایین",
+private fun HomeStatsAssetPanel(history: List<ActionHistoryItem>) {
+    val completedCount = history.count { it.wasCompleted }
+    val helpedCount = history.count { it.wasCompleted && it.helped }
+    val skippedCount = history.count { !it.wasCompleted }
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(92.dp),
-        contentScale = ContentScale.FillBounds
-    )
+            .aspectRatio(1.95f)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.stats_panel),
+            contentDescription = "آمار کوچک",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 34.dp, top = 38.dp, end = 34.dp, bottom = 24.dp),
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "آمار",
+                color = DeepInk,
+                fontSize = 22.sp,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Right
+            )
+            Spacer(modifier = Modifier.height(22.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "تا حالا $helpedCount بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری",
+                color = Muted,
+                fontSize = 13.sp,
+                lineHeight = 22.sp,
+                textAlign = TextAlign.Right
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HomeStatCounter(label = "انجام نشده", value = skippedCount)
+                HomeStatCounter(label = "کمک کرد", value = helpedCount)
+                HomeStatCounter(label = "انجام شد", value = completedCount)
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeStatCounter(label: String, value: Int) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value.toString(),
+            color = DeepInk,
+            fontSize = 30.sp,
+            lineHeight = 34.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Text(text = label, color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun ImageBottomBar(onHomeClick: () -> Unit = {}) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(92.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.bottom_nav),
+            contentDescription = "ناوبری پایین",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clickable(onClick = onHomeClick)
+            )
+        }
+    }
 }
 
 @Composable
@@ -403,7 +466,7 @@ private fun StepHeader(title: String, subtitle: String) {
                 fontSize = 29.sp,
                 lineHeight = 38.sp,
                 fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.End
+                textAlign = TextAlign.Right
     )
     Spacer(modifier = Modifier.height(8.dp))
     Text(
@@ -411,7 +474,7 @@ private fun StepHeader(title: String, subtitle: String) {
                 text = subtitle,
                 color = Muted,
                 fontSize = 16.sp,
-                textAlign = TextAlign.End,
+                textAlign = TextAlign.Right,
                 lineHeight = 27.sp
     )
     Spacer(modifier = Modifier.height(8.dp))
@@ -520,9 +583,22 @@ private fun LargeChoiceCard(
             }
             Spacer(modifier = Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-                Text(text = title, color = DeepInk, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = title,
+                    color = DeepInk,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Right
+                )
                 Spacer(modifier = Modifier.height(6.dp))
-                Text(text = description, color = Muted, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.End)
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = description,
+                    color = Muted,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Right
+                )
             }
         }
     }

@@ -529,3 +529,50 @@ Reworked the home screen to use the provided PNG layer assets directly and added
 - Replaced the hand-built home title, stats, mood cards, history card, background, logo header, and bottom navigation with image assets.
 - Removed unused hand-built home card, icon, decoration, and bottom navigation composables.
 - Right-aligned remaining text on internal screens and verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
+
+## 2026-07-10 - Restore Dynamic Stats And Home Navigation
+
+### Original User Prompt
+
+```text
+توی تبدیل به تصویر یه جاهایی زیاده روی کردی!
+فعلا تصاویر رو دست نزن و تغییرات زیر رو بده. بعد میخوام تصویر ها رو عکسهای جدید جایگزین کنم 
+
+-توی کارت آمار کوچک باید جمله توی عکس نباشه که بشه کانتر عدد اضافه کنه
+"تا حالا {COUNT} بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری"
+فعلا متن رو روی کارت اضافه کن بعدا من تصاویر رو درست میکنم
+-توی همین کارت عددهای انجام شد، کمک کرد و انجام نشده باید از دیتابیس خونده بشن
+فعلا متن رو روی کارت اضافه کن بعدا من تصاویر رو درست میکنم
+
+-نوار پایین شامل 5 تا دکمه هست .دکمه "خانه" به صفحه اول برگردد
+-توی صفحه انتخاب انرژی هنوز متنها راست چین نشدند
+```
+
+### Summary
+
+Kept the existing image assets unchanged while restoring dynamic Compose text and counters where needed.
+
+### Key Changes
+
+- Added dynamic overlay text and counters on the home stats card using history data.
+- Made the bottom navigation home area return to the mood selection screen.
+- Tightened right alignment for energy selection card text.
+- Verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
+
+## 2026-07-10 - Adjust Transparent Home Assets Layout
+
+### Original User Prompt
+
+```text
+بک گراند تصاویر را واقعا دستی حذف کردم
+```
+
+### Summary
+
+Verified the updated image assets now have transparent corners and adjusted the home layout around the transparent assets.
+
+### Key Changes
+
+- Removed the extra standalone home logo/header image so the home title asset owns that area.
+- Updated home card aspect ratios and changed the stats card title to `آمار`.
+- Kept dynamic stats overlay and verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.

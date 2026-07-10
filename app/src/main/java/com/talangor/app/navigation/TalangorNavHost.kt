@@ -88,6 +88,14 @@ fun TalangorNavHost(viewModel: MoodViewModel) {
         composable(TalangorRoute.History.route) {
             HistoryScreen(
                 history = state.history,
+                onHomeClick = {
+                    navController.navigate(TalangorRoute.MoodSelection.route) {
+                        popUpTo(TalangorRoute.MoodSelection.route) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 onBackClick = {
                     navController.popBackStack()
                 }
