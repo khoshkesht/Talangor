@@ -443,16 +443,16 @@ private fun ImageBottomBar(onHomeClick: () -> Unit = {}) {
             contentScale = ContentScale.FillBounds
         )
         Row(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f).fillMaxHeight())
-            Box(modifier = Modifier.weight(1f).fillMaxHeight())
-            Box(modifier = Modifier.weight(1f).fillMaxHeight())
-            Box(modifier = Modifier.weight(1f).fillMaxHeight())
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable(onClick = onHomeClick)
             )
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
+            Box(modifier = Modifier.weight(1f).fillMaxHeight())
         }
     }
 }
