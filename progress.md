@@ -596,3 +596,24 @@ Adjusted the home screen layout after transparent assets reduced the visual foot
 - Reduced home screen item spacing, top padding, grid spacing, card heights, and bottom bar height.
 - Repositioned the stats title, sentence, and counters with direct overlay placement.
 - Verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
+
+## 2026-07-10 - Configure Release APK Name And Icon
+
+### Original User Prompt
+
+```text
+میخوام خروجی ریلیز بگیرم
+1- اسم فایل درست نیست
+2- آیکونش با اینکه ست کردم درست نیست
+3- نصب نشد، گفت از این منبع ناشناس هست مسدود کرد
+```
+
+### Summary
+
+Configured the launcher icon in the manifest and renamed the release APK output.
+
+### Key Changes
+
+- Added `android:icon` and `android:roundIcon` to the app manifest.
+- Configured release APK output name as `Talangor-1.0.apk`.
+- Verified release build with `.\gradlew.bat assembleRelease --offline --no-daemon`.

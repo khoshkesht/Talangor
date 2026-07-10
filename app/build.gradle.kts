@@ -26,6 +26,14 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("Talangor-${output.versionName.get()}.apk")
+        }
+    }
+}
+
 dependencies {
     val roomVersion = "2.8.4"
     val navVersion = "2.9.8"
