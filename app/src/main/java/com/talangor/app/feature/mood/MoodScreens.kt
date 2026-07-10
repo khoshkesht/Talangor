@@ -96,9 +96,9 @@ fun MoodSelectionScreen(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(390.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .height(330.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 userScrollEnabled = false
             ) {
                 items(state.moods) { mood ->
@@ -116,7 +116,7 @@ fun MoodSelectionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onHistoryClick),
-                aspectRatio = 3.2f,
+                aspectRatio = 3.45f,
                 contentDescription = "تاریخچه"
             )
         }
@@ -295,19 +295,19 @@ private fun ScreenShell(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 22.dp,
-                top = if (useImageBackground) 34.dp else 22.dp,
-                end = 22.dp,
-                bottom = if (bottomBar == null) 28.dp else 118.dp
+                start = if (useImageBackground) 18.dp else 22.dp,
+                top = if (useImageBackground) 18.dp else 22.dp,
+                end = if (useImageBackground) 18.dp else 22.dp,
+                bottom = if (bottomBar == null) 28.dp else 88.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(if (useImageBackground) 12.dp else 18.dp),
+            verticalArrangement = Arrangement.spacedBy(if (useImageBackground) 2.dp else 10.dp),
             content = content
         )
         if (bottomBar != null) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .padding(horizontal = 14.dp, vertical = 8.dp)
             ) {
                 bottomBar()
             }
@@ -355,7 +355,7 @@ private fun MoodAssetCard(mood: MoodChoice, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        aspectRatio = 1.65f,
+        aspectRatio = 1.76f,
         contentDescription = mood.label
     )
 }
@@ -377,40 +377,40 @@ private fun HomeStatsAssetPanel(history: List<ActionHistoryItem>) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        Column(
+        Text(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 34.dp, top = 38.dp, end = 34.dp, bottom = 24.dp),
-            horizontalAlignment = Alignment.End
+                .fillMaxWidth()
+                .align(Alignment.TopEnd)
+                .padding(top = 30.dp, end = 70.dp, start = 70.dp),
+            text = "آمار",
+            color = DeepInk,
+            fontSize = 18.sp,
+            lineHeight = 28.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Right
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .padding(start = 42.dp, end = 42.dp, bottom = 40.dp),
+            text = "تا حالا $helpedCount بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری",
+            color = Muted,
+            fontSize = 12.sp,
+            lineHeight = 20.sp,
+            textAlign = TextAlign.Right
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(start = 48.dp, end = 48.dp, bottom = 50.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "آمار",
-                color = DeepInk,
-                fontSize = 22.sp,
-                lineHeight = 28.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Right
-            )
-            Spacer(modifier = Modifier.height(22.dp))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = "تا حالا $helpedCount بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری",
-                color = Muted,
-                fontSize = 13.sp,
-                lineHeight = 22.sp,
-                textAlign = TextAlign.Right
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HomeStatCounter(label = "انجام نشده", value = skippedCount)
-                HomeStatCounter(label = "کمک کرد", value = helpedCount)
-                HomeStatCounter(label = "انجام شد", value = completedCount)
-            }
+            HomeStatCounter(label = "", value = skippedCount)
+            HomeStatCounter(label = "", value = helpedCount)
+            HomeStatCounter(label = "", value = completedCount)
         }
     }
 }
@@ -421,11 +421,11 @@ private fun HomeStatCounter(label: String, value: Int) {
         Text(
             text = value.toString(),
             color = DeepInk,
-            fontSize = 30.sp,
-            lineHeight = 34.sp,
+            fontSize = 20.sp,
+            lineHeight = 30.sp,
             fontWeight = FontWeight.ExtraBold
         )
-        Text(text = label, color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)
+        Text(text = label, color = Muted, fontSize = 10.sp, textAlign = TextAlign.Center)
     }
 }
 
@@ -434,7 +434,7 @@ private fun ImageBottomBar(onHomeClick: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(92.dp)
+            .height(72.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.bottom_nav),

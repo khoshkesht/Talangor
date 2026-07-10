@@ -576,3 +576,23 @@ Verified the updated image assets now have transparent corners and adjusted the 
 - Removed the extra standalone home logo/header image so the home title asset owns that area.
 - Updated home card aspect ratios and changed the stats card title to `آمار`.
 - Kept dynamic stats overlay and verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
+
+## 2026-07-10 - Tighten Home Screen Spacing
+
+### Original User Prompt
+
+```text
+خیلی بهتر شد. حالا چند تا اشکال هست
+1- جای نوشته ها روی کارت آمار خوب نسیت
+2- با توجه به حذف بکگراند تصاویر فضای خالی بینشون زیاد شده. هم کارتهای پایین و هم بالا
+```
+
+### Summary
+
+Adjusted the home screen layout after transparent assets reduced the visual footprint of each image.
+
+### Key Changes
+
+- Reduced home screen item spacing, top padding, grid spacing, card heights, and bottom bar height.
+- Repositioned the stats title, sentence, and counters with direct overlay placement.
+- Verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
