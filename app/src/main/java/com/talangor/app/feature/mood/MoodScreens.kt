@@ -1,39 +1,70 @@
 package com.talangor.app.feature.mood
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.talangor.app.R
 import com.talangor.app.domain.model.ActionHistoryItem
 import com.talangor.app.domain.model.SuggestedAction
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val DeepInk = Color(0xFF1B114F)
+private val Purple = Color(0xFF7D5AE8)
+private val PurpleDark = Color(0xFF5B3BC0)
+private val PurpleSoft = Color(0xFFE9DDFF)
+private val Muted = Color(0xFF6F6688)
+private val Glass = Color(0x8FFFFFFF)
+private val GlassStrong = Color(0xCFFFFFFF)
+private val Border = Color(0xE6FFFFFF)
+private val PageGradient = Brush.verticalGradient(
+    colors = listOf(Color(0xFFFFFCFF), Color(0xFFF2EAFF), Color(0xFFE9DEFF))
+)
+
 @Composable
 fun MoodSelectionScreen(
     state: MoodUiState,
@@ -41,40 +72,62 @@ fun MoodSelectionScreen(
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "تلنگر") },
-                actions = {
-                    TextButton(onClick = onHistoryClick) {
-                        Text(text = "تاریخچه")
-                    }
-                }
+    ScreenShell(
+        modifier = modifier,
+        useImageBackground = true,
+        bottomBar = { ImageBottomBar() }
+    ) {
+        item {
+            BrandHeaderAsset()
+            ImageAssetBlock(
+                drawableRes = R.drawable.home_title,
+                modifier = Modifier.fillMaxWidth(),
+                aspectRatio = 2.45f,
+                contentDescription = "عنوان صفحه انتخاب وضعیت"
             )
         }
-    ) { padding ->
-        StepList(
-            padding = padding,
-            title = "الان چه حالی داری؟",
-            subtitle = "یک وضعیت را انتخاب کن تا فقط یک قدم کوچک پیشنهاد شود."
-        ) {
-            item {
-                StatsSummary(history = state.history)
-            }
 
-            items(state.moods) { mood ->
-                ChoiceCard(
-                    title = mood.label,
-                    description = mood.description,
-                    onClick = { onMoodSelected(mood) }
-                )
+        item {
+            ImageAssetBlock(
+                drawableRes = R.drawable.stats_panel,
+                modifier = Modifier.fillMaxWidth(),
+                aspectRatio = 1.95f,
+                contentDescription = "آمار کوچک"
+            )
+        }
+
+        item {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(390.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                userScrollEnabled = false
+            ) {
+                items(state.moods) { mood ->
+                    MoodAssetCard(
+                        mood = mood,
+                        onClick = { onMoodSelected(mood) }
+                    )
+                }
             }
+        }
+
+        item {
+            ImageAssetBlock(
+                drawableRes = R.drawable.history_panel,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onHistoryClick),
+                aspectRatio = 2.95f,
+                contentDescription = "تاریخچه"
+            )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnergySelectionScreen(
     state: MoodUiState,
@@ -82,36 +135,28 @@ fun EnergySelectionScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = state.selectedMood?.label ?: "سطح انرژی") },
-                navigationIcon = {
-                    TextButton(onClick = onBackClick) {
-                        Text(text = "بازگشت")
-                    }
-                }
+    ScreenShell(modifier = modifier) {
+        item {
+            HeaderLogo(compact = true)
+            StepHeader(
+                title = "چقدر انرژی داری؟",
+                subtitle = "پیشنهاد با توان همین لحظه‌ات هماهنگ می‌شود."
             )
         }
-    ) { padding ->
-        StepList(
-            padding = padding,
-            title = "چقدر انرژی داری؟",
-            subtitle = "پیشنهاد با توان همین لحظه‌ات هماهنگ می‌شود."
-        ) {
-            items(state.energyLevels) { energy ->
-                ChoiceCard(
-                    title = energy.label,
-                    description = energy.description,
-                    onClick = { onEnergySelected(energy) }
-                )
-            }
+        items(state.energyLevels) { energy ->
+            LargeChoiceCard(
+                title = energy.label,
+                description = energy.description,
+                icon = energyIcon(energy.key),
+                onClick = { onEnergySelected(energy) }
+            )
+        }
+        item {
+            SecondaryActionButton(text = "بازگشت", onClick = onBackClick)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuggestedActionScreen(
     state: MoodUiState,
@@ -121,45 +166,40 @@ fun SuggestedActionScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "پیشنهاد تلنگر") },
-                navigationIcon = {
-                    TextButton(onClick = onBackClick) {
-                        Text(text = "بازگشت")
-                    }
-                }
+    ScreenShell(modifier = modifier) {
+        item {
+            HeaderLogo(compact = true)
+            StepHeader(
+                title = "تلنگر پیشنهادی",
+                subtitle = "فقط همین قدم کوچک را امتحان کن؛ کافی است."
             )
         }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(20.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
-                state.isLoading -> CircularProgressIndicator()
-                state.suggestedAction != null -> SuggestedActionContent(
-                    state = state,
-                    suggestion = state.suggestedAction,
-                    onDoneClick = onDoneClick,
-                    onNotDoneClick = onNotDoneClick,
-                    onAnotherClick = onAnotherClick
-                )
-                else -> EmptySuggestionContent(
-                    message = state.errorMessage ?: "پیشنهادی پیدا نشد.",
-                    onBackClick = onBackClick
-                )
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(420.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when {
+                    state.isLoading -> CircularProgressIndicator(color = Purple)
+                    state.suggestedAction != null -> SuggestedActionContent(
+                        state = state,
+                        suggestion = state.suggestedAction,
+                        onDoneClick = onDoneClick,
+                        onNotDoneClick = onNotDoneClick,
+                        onAnotherClick = onAnotherClick
+                    )
+                    else -> EmptySuggestionContent(
+                        message = state.errorMessage ?: "پیشنهادی پیدا نشد.",
+                        onBackClick = onBackClick
+                    )
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(
     completed: Boolean,
@@ -168,194 +208,234 @@ fun ResultScreen(
     onHistoryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = { Text(text = "نتیجه") })
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (completed) {
-                Text(
-                    text = "این قدم کوچک انجام شد؟ عالی. کمک کرد؟",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "بازخوردت فقط برای بهتر شدن پیشنهادهای بعدی ذخیره می‌شود.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onHelpedClick(true) }
-                ) {
-                    Text(text = "کمک کرد")
+    ScreenShell(modifier = modifier) {
+        item {
+            HeaderLogo(compact = true)
+            GlassPanel {
+                if (completed) {
+                    StepHeader(
+                        title = "این قدم کمک کرد؟",
+                        subtitle = "بازخوردت فقط برای بهتر شدن پیشنهادهای بعدی ذخیره می‌شود."
+                    )
+                    PrimaryActionButton(text = "کمک کرد", onClick = { onHelpedClick(true) })
+                    Spacer(modifier = Modifier.height(10.dp))
+                    SecondaryActionButton(text = "کمک نکرد", onClick = { onHelpedClick(false) })
+                } else {
+                    StepHeader(
+                        title = "اشکالی ندارد",
+                        subtitle = "همین که وضعیتت را دیدی یک قدم کوچک است."
+                    )
+                    PrimaryActionButton(text = "شروع دوباره", onClick = onNewMoodClick)
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onHelpedClick(false) }
-                ) {
-                    Text(text = "کمک نکرد")
-                }
-            } else {
-                Text(
-                    text = "اشکالی ندارد؛ همین که وضعیتت را دیدی یک قدم است.",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "می‌توانی بعدا با یک انتخاب تازه دوباره شروع کنی.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onNewMoodClick
-                ) {
-                    Text(text = "شروع دوباره")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onHistoryClick
-            ) {
-                Text(text = "دیدن تاریخچه")
+                Spacer(modifier = Modifier.height(10.dp))
+                SecondaryActionButton(text = "دیدن تاریخچه", onClick = onHistoryClick)
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
     history: List<ActionHistoryItem>,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "تاریخچه تلنگرها") },
-                navigationIcon = {
-                    TextButton(onClick = onBackClick) {
-                        Text(text = "بازگشت")
-                    }
-                }
+    ScreenShell(
+        modifier = modifier,
+        bottomBar = { ImageBottomBar() }
+    ) {
+        item {
+            HeaderLogo(compact = true)
+            StepHeader(
+                title = "تاریخچه تلنگرها",
+                subtitle = "مرور وضعیت‌ها و قدم‌های قبلی"
             )
         }
-    ) { padding ->
+        item {
+            StatsSummary(history = history)
+        }
         if (history.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "هنوز تلنگری ثبت نشده است.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+            item {
+                GlassPanel {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "هنوز تلنگری ثبت نشده است.",
+                        color = Muted,
+                        textAlign = TextAlign.End
+                    )
+                }
             }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                item {
-                    StatsSummary(history = history)
-                }
+            items(history) { item ->
+                HistoryItemCard(item = item)
+            }
+        }
+        item {
+            SecondaryActionButton(text = "بازگشت", onClick = onBackClick)
+        }
+    }
+}
 
-                items(history) { item ->
-                    HistoryItemCard(item = item)
-                }
+@Composable
+private fun ScreenShell(
+    modifier: Modifier = Modifier,
+    useImageBackground: Boolean = false,
+    bottomBar: (@Composable () -> Unit)? = null,
+    content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(PageGradient)
+    ) {
+        if (useImageBackground) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_main),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = 22.dp,
+                top = if (useImageBackground) 34.dp else 22.dp,
+                end = 22.dp,
+                bottom = if (bottomBar == null) 28.dp else 118.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(if (useImageBackground) 12.dp else 18.dp),
+            content = content
+        )
+        if (bottomBar != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+            ) {
+                bottomBar()
             }
         }
     }
 }
 
 @Composable
-private fun StepList(
-    padding: PaddingValues,
-    title: String,
-    subtitle: String,
-    content: androidx.compose.foundation.lazy.LazyListScope.() -> Unit
+private fun BrandHeaderAsset() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.brand_header),
+            contentDescription = "لوگوی تلنگر",
+            modifier = Modifier
+                .width(154.dp)
+                .height(58.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+private fun HeaderLogo(compact: Boolean = false) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.talangor_logo),
+            contentDescription = "لوگوی تلنگر",
+            modifier = Modifier
+                .width(if (compact) 138.dp else 178.dp)
+                .height(if (compact) 48.dp else 62.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+private fun ImageAssetBlock(
+    drawableRes: Int,
+    modifier: Modifier = Modifier,
+    aspectRatio: Float,
+    contentDescription: String? = null
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        content = {
-            item {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            content()
-        }
+    Image(
+        painter = painterResource(id = drawableRes),
+        contentDescription = contentDescription,
+        modifier = modifier.aspectRatio(aspectRatio),
+        contentScale = ContentScale.Crop
     )
 }
 
 @Composable
-private fun ChoiceCard(
-    title: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    Card(
+private fun MoodAssetCard(mood: MoodChoice, onClick: () -> Unit) {
+    ImageAssetBlock(
+        drawableRes = moodCardDrawable(mood.key),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        aspectRatio = 1.42f,
+        contentDescription = mood.label
+    )
+}
+
+@Composable
+private fun ImageBottomBar() {
+    Image(
+        painter = painterResource(id = R.drawable.bottom_nav),
+        contentDescription = "ناوبری پایین",
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(92.dp),
+        contentScale = ContentScale.FillBounds
+    )
+}
+
+@Composable
+private fun StepHeader(title: String, subtitle: String) {
+    Text(
         modifier = Modifier.fillMaxWidth(),
-        onClick = onClick,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                color = DeepInk,
+                fontSize = 29.sp,
+                lineHeight = 38.sp,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.End
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        modifier = Modifier.fillMaxWidth(),
+                text = subtitle,
+                color = Muted,
+                fontSize = 16.sp,
+                textAlign = TextAlign.End,
+                lineHeight = 27.sp
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun GlassPanel(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(24.dp, RoundedCornerShape(28.dp), ambientColor = Color(0x55BFA9FF), spotColor = Color(0x55BFA9FF))
+            .clip(RoundedCornerShape(28.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(Color(0xBFFFFFFF), Glass, Color(0x66F4ECFF))
+                )
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
+            .border(1.4.dp, Border, RoundedCornerShape(28.dp))
+            .padding(17.dp),
+        content = content
+    )
 }
 
 @Composable
@@ -364,49 +444,87 @@ private fun StatsSummary(history: List<ActionHistoryItem>) {
     val helpedCount = history.count { it.wasCompleted && it.helped }
     val skippedCount = history.count { !it.wasCompleted }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    GlassPanel {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 text = "آمار کوچک",
-                style = MaterialTheme.typography.titleMedium,
+                color = DeepInk,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
+            RoundIcon(size = 54.dp) { StatsIcon() }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
                 text = "تا حالا $helpedCount بار یک تلنگر کمک کرده از وضعیت بد فاصله بگیری.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                StatText(label = "انجام شد", value = completedCount)
-                StatText(label = "کمک کرد", value = helpedCount)
-                StatText(label = "انجام نشد", value = skippedCount)
-            }
+                color = Muted,
+                fontSize = 15.sp,
+                lineHeight = 24.sp
+        )
+        Spacer(modifier = Modifier.height(18.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            StatText(label = "انجام شد", value = completedCount) { StarIcon() }
+            StatDivider()
+            StatText(label = "کمک کرد", value = helpedCount) { CheckIcon() }
+            StatDivider()
+            StatText(label = "انجام نشده", value = skippedCount) { CloseIcon() }
         }
     }
 }
 
 @Composable
-private fun StatText(label: String, value: Int) {
+private fun StatText(label: String, value: Int, icon: @Composable () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = value.toString(),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            color = DeepInk,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.ExtraBold
         )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text(text = label, color = Muted, fontSize = 13.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        RoundIcon(size = 38.dp, content = icon)
+    }
+}
+
+@Composable
+private fun StatDivider() {
+    Box(
+        modifier = Modifier
+            .height(86.dp)
+            .width(1.dp)
+            .background(PurpleSoft)
+    )
+}
+
+@Composable
+private fun LargeChoiceCard(
+    title: String,
+    description: String,
+    icon: String,
+    onClick: () -> Unit
+) {
+    GlassPanel(
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            RoundIcon(size = 62.dp, filled = true) {
+                EnergyCanvasIcon(icon)
+            }
+            Spacer(modifier = Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                Text(text = title, color = DeepInk, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = description, color = Muted, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.End)
+            }
+        }
     }
 }
 
@@ -420,156 +538,185 @@ private fun SuggestedActionContent(
 ) {
     val action = suggestion.action
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = action.title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+    GlassPanel {
+        Text(text = action.title, color = DeepInk, fontSize = 26.sp, lineHeight = 34.sp, fontWeight = FontWeight.ExtraBold)
         Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            text = action.description,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "${action.durationMinutes} دقیقه • ${action.category}",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Text(text = action.description, color = Muted, style = MaterialTheme.typography.bodyLarge, lineHeight = 28.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = "${action.durationMinutes} دقیقه • ${action.category}", color = PurpleDark, style = MaterialTheme.typography.labelLarge)
         Spacer(modifier = Modifier.height(16.dp))
         TimerPanel(
             remainingSeconds = state.timerRemainingSeconds,
             totalSeconds = state.timerTotalSeconds,
             isRunning = state.isTimerRunning
         )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onDoneClick
-        ) {
-            Text(text = "انجام شد")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onNotDoneClick
-        ) {
-            Text(text = "انجام نشد")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onAnotherClick
-        ) {
-            Text(text = "پیشنهاد دیگر")
-        }
+        Spacer(modifier = Modifier.height(18.dp))
+        PrimaryActionButton(text = "انجام شد", onClick = onDoneClick)
+        Spacer(modifier = Modifier.height(10.dp))
+        SecondaryActionButton(text = "انجام نشد", onClick = onNotDoneClick)
+        Spacer(modifier = Modifier.height(10.dp))
+        SecondaryActionButton(text = "پیشنهاد دیگر", onClick = onAnotherClick)
     }
 }
 
 @Composable
-private fun TimerPanel(
-    remainingSeconds: Int,
-    totalSeconds: Int,
-    isRunning: Boolean
-) {
-    val progress = if (totalSeconds == 0) {
-        0f
-    } else {
-        remainingSeconds.toFloat() / totalSeconds.toFloat()
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "تایمر ساده",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = formatTime(remainingSeconds),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LinearProgressIndicator(
-                progress = { progress },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = if (isRunning) "در حال شمارش" else "زمان تمام شد",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun EmptySuggestionContent(
-    message: String,
-    onBackClick: () -> Unit
-) {
+private fun TimerPanel(remainingSeconds: Int, totalSeconds: Int, isRunning: Boolean) {
+    val progress = if (totalSeconds == 0) 0f else remainingSeconds.toFloat() / totalSeconds.toFloat()
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(22.dp))
+            .background(GlassStrong)
+            .padding(14.dp)
     ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onBackClick) {
-            Text(text = "تغییر انتخاب")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "تایمر ساده", color = DeepInk, fontWeight = FontWeight.Bold)
+            Text(text = formatTime(remainingSeconds), color = DeepInk, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+            color = Purple,
+            trackColor = PurpleSoft,
+            strokeCap = StrokeCap.Round
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(text = if (isRunning) "در حال شمارش" else "زمان تمام شد", color = Muted, style = MaterialTheme.typography.labelMedium)
+    }
+}
+
+@Composable
+private fun EmptySuggestionContent(message: String, onBackClick: () -> Unit) {
+    GlassPanel {
+        Text(modifier = Modifier.fillMaxWidth(), text = message, color = Muted, textAlign = TextAlign.End)
+        Spacer(modifier = Modifier.height(16.dp))
+        PrimaryActionButton(text = "تغییر انتخاب", onClick = onBackClick)
     }
 }
 
 @Composable
 private fun HistoryItemCard(item: ActionHistoryItem) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = item.actionTitle ?: "پیشنهاد حذف‌شده",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            item.actionDescription?.let { description ->
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            Text(
-                text = "${moodLabel(item.mood)} • ${energyLabel(item.energyLevel)} • ${resultLabel(item)}",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+    GlassPanel {
+        Text(text = item.actionTitle ?: "پیشنهاد حذف‌شده", color = DeepInk, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(8.dp))
+        item.actionDescription?.let { description ->
+            Text(text = description, color = Muted, style = MaterialTheme.typography.bodyMedium, lineHeight = 24.sp)
+            Spacer(modifier = Modifier.height(8.dp))
         }
+        Text(text = "${moodLabel(item.mood)} • ${energyLabel(item.energyLevel)} • ${resultLabel(item)}", color = PurpleDark, style = MaterialTheme.typography.labelLarge)
     }
+}
+
+@Composable
+private fun PrimaryActionButton(text: String, onClick: () -> Unit) {
+    Button(
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Purple, contentColor = Color.White)
+    ) {
+        Text(text = text, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun SecondaryActionButton(text: String, onClick: () -> Unit) {
+    OutlinedButton(
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, PurpleSoft),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = PurpleDark)
+    ) {
+        Text(text = text, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun RoundIcon(
+    size: androidx.compose.ui.unit.Dp,
+    filled: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(size)
+            .shadow(12.dp, CircleShape, ambientColor = PurpleSoft, spotColor = PurpleSoft)
+            .clip(CircleShape)
+            .background(if (filled) Brush.radialGradient(listOf(Purple, PurpleDark)) else Brush.radialGradient(listOf(Color.White, PurpleSoft)))
+            .border(1.dp, Border, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun StatsIcon() {
+    androidx.compose.foundation.Canvas(modifier = Modifier.size(22.dp)) {
+        val bar = PurpleDark
+        val width = size.width * .14f
+        drawRoundRect(bar, topLeft = Offset(size.width * .2f, size.height * .48f), size = Size(width, size.height * .34f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5f, 5f))
+        drawRoundRect(bar, topLeft = Offset(size.width * .43f, size.height * .26f), size = Size(width, size.height * .56f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5f, 5f))
+        drawRoundRect(bar, topLeft = Offset(size.width * .66f, size.height * .12f), size = Size(width, size.height * .7f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(5f, 5f))
+    }
+}
+
+@Composable
+private fun CheckIcon() {
+    androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp)) {
+        drawLine(PurpleDark, Offset(size.width * .22f, size.height * .55f), Offset(size.width * .43f, size.height * .75f), strokeWidth = 3.8f, cap = StrokeCap.Round)
+        drawLine(PurpleDark, Offset(size.width * .43f, size.height * .75f), Offset(size.width * .78f, size.height * .25f), strokeWidth = 3.8f, cap = StrokeCap.Round)
+    }
+}
+
+@Composable
+private fun CloseIcon() {
+    androidx.compose.foundation.Canvas(modifier = Modifier.size(18.dp)) {
+        drawLine(PurpleDark, Offset(size.width * .25f, size.height * .25f), Offset(size.width * .75f, size.height * .75f), strokeWidth = 3.5f, cap = StrokeCap.Round)
+        drawLine(PurpleDark, Offset(size.width * .75f, size.height * .25f), Offset(size.width * .25f, size.height * .75f), strokeWidth = 3.5f, cap = StrokeCap.Round)
+    }
+}
+
+@Composable
+private fun StarIcon() {
+    Text(text = "☆", color = PurpleDark, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+}
+
+@Composable
+private fun EnergyCanvasIcon(icon: String) {
+    Text(text = icon, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
 }
 
 private fun formatTime(seconds: Int): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60
     return "%02d:%02d".format(minutes, remainingSeconds)
+}
+
+private fun moodCardDrawable(mood: String): Int {
+    return when (mood) {
+        "anxious" -> R.drawable.mood_anxious
+        "bored" -> R.drawable.mood_bored
+        "tired" -> R.drawable.mood_tired
+        "unfocused" -> R.drawable.mood_unfocused
+        "unmotivated" -> R.drawable.mood_unmotivated
+        else -> R.drawable.mood_unmotivated
+    }
+}
+
+private fun energyIcon(energy: String): String {
+    return when (energy) {
+        "low" -> "۱"
+        "medium" -> "۲"
+        "high" -> "۳"
+        else -> "•"
+    }
 }
 
 private fun moodLabel(mood: String): String {

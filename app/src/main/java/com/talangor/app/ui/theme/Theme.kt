@@ -10,16 +10,30 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 
 private val LightColors = lightColorScheme(
-    primary = TalangorBlue,
-    secondary = TalangorGreen,
-    tertiary = TalangorRose,
-    background = TalangorBackground
+    primary = TalangorPurple,
+    onPrimary = TalangorSurface,
+    primaryContainer = TalangorPurpleSoft,
+    onPrimaryContainer = TalangorPurpleDark,
+    secondary = TalangorPurpleDark,
+    tertiary = TalangorLilac,
+    background = TalangorBackground,
+    onBackground = TalangorInk,
+    surface = TalangorSurface,
+    onSurface = TalangorInk,
+    onSurfaceVariant = TalangorTextMuted
 )
 
 private val DarkColors = darkColorScheme(
-    primary = TalangorBlueDark,
-    secondary = TalangorGreenDark,
-    tertiary = TalangorRoseDark
+    primary = TalangorPurpleNight,
+    onPrimary = TalangorPurpleDark,
+    primaryContainer = TalangorPurple,
+    onPrimaryContainer = TalangorInkNight,
+    secondary = TalangorPurpleSoft,
+    tertiary = TalangorPurple,
+    background = TalangorPurpleDark,
+    onBackground = TalangorInkNight,
+    surface = TalangorInk,
+    onSurface = TalangorInkNight
 )
 
 @Composable

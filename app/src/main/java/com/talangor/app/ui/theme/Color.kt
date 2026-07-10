@@ -2,11 +2,14 @@ package com.talangor.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val TalangorBlue = Color(0xFF26547C)
-val TalangorGreen = Color(0xFF2A9D8F)
-val TalangorRose = Color(0xFFEF476F)
-val TalangorBackground = Color(0xFFF8F7F3)
+val TalangorPurple = Color(0xFF6E4ACF)
+val TalangorPurpleDark = Color(0xFF1E114F)
+val TalangorPurpleSoft = Color(0xFFE9DDFF)
+val TalangorLilac = Color(0xFFF4EEFF)
+val TalangorInk = Color(0xFF171042)
+val TalangorTextMuted = Color(0xFF6F6688)
+val TalangorSurface = Color(0xF2FFFFFF)
+val TalangorBackground = Color(0xFFFAF7FF)
 
-val TalangorBlueDark = Color(0xFF8ECAE6)
-val TalangorGreenDark = Color(0xFF74D3AE)
-val TalangorRoseDark = Color(0xFFFF8FAB)
+val TalangorPurpleNight = Color(0xFFC9B5FF)
+val TalangorInkNight = Color(0xFFF5F0FF)

@@ -418,3 +418,114 @@ Reviewed the MVP requirements in `.agents/DOC.md` and compared them with the cur
 ### Key Changes
 
 - Listed the remaining MVP gaps and next implementation tasks.
+
+## 2026-07-10 - Review Visual Design Reference
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: .agents/DOC.md
+
+## Open tabs:
+- DOC.md: .agents/DOC.md
+- InitialActionSeeds.kt: app/src/main/java/com/talangor/app/data/local/seed/InitialActionSeeds.kt
+- MoodUiState.kt: app/src/main/java/com/talangor/app/feature/mood/MoodUiState.kt
+- MoodViewModel.kt: app/src/main/java/com/talangor/app/feature/mood/MoodViewModel.kt
+- ActionDao.kt: app/src/main/java/com/talangor/app/data/local/dao/ActionDao.kt
+
+## My request for Codex:
+این تصویر رو ببین. میخوام طراحی برنامه به این شکل باشه با همین تم و تصاویر . چه کارهایی لازمه انجام بدم. همینطوری میتونی انجامش بدی؟
+```
+
+### Summary
+
+Reviewed the provided visual reference and identified the implementation work needed to match its theme and layout.
+
+### Key Changes
+
+- Listed the design, asset, and UI implementation tasks needed for the reference style.
+
+## 2026-07-10 - Apply Purple Glass Visual Theme
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: .agents/DOC.md
+
+## Open tabs:
+- DOC.md: .agents/DOC.md
+- InitialActionSeeds.kt: app/src/main/java/com/talangor/app/data/local/seed/InitialActionSeeds.kt
+- MoodUiState.kt: app/src/main/java/com/talangor/app/feature/mood/MoodUiState.kt
+- MoodViewModel.kt: app/src/main/java/com/talangor/app/feature/mood/MoodViewModel.kt
+- ActionDao.kt: app/src/main/java/com/talangor/app/data/local/dao/ActionDao.kt
+
+## My request for Codex:
+فایل لوگو رو جدا دارم بهت میدم بقیه رو خودت پیاده سازی کن
+```
+
+### Summary
+
+Applied the provided logo and rebuilt the Compose UI around a purple glass-style visual theme inspired by the reference.
+
+### Key Changes
+
+- Added the logo asset to Android resources.
+- Updated the app color theme and main Compose screens with glass cards, purple icons, stats, history card, and bottom bar styling.
+- Ignored generated Kotlin build metadata and verified the app with `.\gradlew.bat clean assembleDebug --offline`.
+
+## 2026-07-10 - Refine Glass Theme Closer To Reference
+
+### Original User Prompt
+
+```text
+# Context from my IDE setup:
+
+## Active file: app/src/main/java/com/talangor/app/feature/mood/MoodScreens.kt
+
+## Open tabs:
+- MoodScreens.kt: app/src/main/java/com/talangor/app/feature/mood/MoodScreens.kt
+- Theme.kt: app/src/main/java/com/talangor/app/ui/theme/Theme.kt
+- Color.kt: app/src/main/java/com/talangor/app/ui/theme/Color.kt
+- kotlin-compiler-5298684495567033030.salive: .kotlin/sessions/kotlin-compiler-5298684495567033030.salive
+- errors-1783674009066.log: .kotlin/errors/errors-1783674009066.log
+
+## My request for Codex:
+این تصویر اپ که تولید کردی . با تصویری که من دادم مقایسه کن
+خیلی فرق داره
+تم شیشه ای نیست. آیکونها عوض شده 
+سایز نوشته ها درست نیست
+من گفتم اگر لازم هست تصویری چیزی بدم بگو وگرنه عین همون تم میخوام پیاده بشه. میتونی تصویر کارتها رو بببری و بزاری بک گراندشون اگر نمیتونی بسازی
+```
+
+### Summary
+
+Refined the visual implementation to more closely match the reference screen.
+
+### Key Changes
+
+- Made glass cards more translucent and adjusted typography, spacing, and card layout.
+- Replaced text-like mood icons with Canvas-drawn icons and corrected mood card alignment.
+- Verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
+
+## 2026-07-10 - Use Provided Layer Assets For Home UI
+
+### Original User Prompt
+
+```text
+کارت بی انگیزه رو هم آماده کردم که نخوای بسازی. همه کارهای قبلی رو ادامه بده این کارت رو هم اضافه کن. کدهای اضافی رو هم حذف کن
+```
+
+### Summary
+
+Reworked the home screen to use the provided PNG layer assets directly and added the new unmotivated mood card asset.
+
+### Key Changes
+
+- Added `mood_unmotivated.png` and mapped all five moods to provided card images.
+- Replaced the hand-built home title, stats, mood cards, history card, background, logo header, and bottom navigation with image assets.
+- Removed unused hand-built home card, icon, decoration, and bottom navigation composables.
+- Right-aligned remaining text on internal screens and verified the app with `.\gradlew.bat assembleDebug --offline --no-daemon`.
